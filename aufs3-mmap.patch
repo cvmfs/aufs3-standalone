@@ -202,7 +202,7 @@ index 54a8d26..dcf08b6 100644
  				atomic_dec(&inode->i_writecount);
  			mutex_lock(&mapping->i_mmap_mutex);
 diff --git a/mm/filemap.c b/mm/filemap.c
-index a82fbe4..f7e38b6 100644
+index 5020b28..31dc985 100644
 --- a/mm/filemap.c
 +++ b/mm/filemap.c
 @@ -2082,7 +2082,7 @@ int filemap_page_mkwrite(struct vm_area_struct *vma, struct vm_fault *vmf)
@@ -248,10 +248,10 @@ index 539eeb9..5e700b1 100644
  	return error;
  }
 diff --git a/mm/memory.c b/mm/memory.c
-index d0f0bef..1293484 100644
+index 037b812..6e7d241 100644
 --- a/mm/memory.c
 +++ b/mm/memory.c
-@@ -2785,7 +2785,7 @@ reuse:
+@@ -2805,7 +2805,7 @@ reuse:
  			set_page_dirty_balance(dirty_page);
  			/* file_update_time outside page_lock */
  			if (vma->vm_file)

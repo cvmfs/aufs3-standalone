@@ -71,7 +71,7 @@ index 9bc07d2..897bde2 100644
  	ssize_t (*splice_read)(struct file *, loff_t *,
  			       struct pipe_inode_info *, size_t, unsigned int);
 diff --git a/include/linux/fs.h b/include/linux/fs.h
-index 7a9c5bc..ab5e957 100644
+index 8780312..3ff3e89 100644
 --- a/include/linux/fs.h
 +++ b/include/linux/fs.h
 @@ -2606,6 +2606,7 @@ extern int inode_change_ok(const struct inode *, struct iattr *);

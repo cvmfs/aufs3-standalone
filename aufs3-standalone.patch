@@ -161,7 +161,7 @@ index b9d613e..ba3b618 100644
  }
 +EXPORT_SYMBOL(cap_mmap_file);
 diff --git a/security/device_cgroup.c b/security/device_cgroup.c
-index 8365909..20b0098 100644
+index 9134dbf..4d4217a 100644
 --- a/security/device_cgroup.c
 +++ b/security/device_cgroup.c
 @@ -7,6 +7,7 @@
@@ -172,7 +172,7 @@ index 8365909..20b0098 100644
  #include <linux/list.h>
  #include <linux/uaccess.h>
  #include <linux/seq_file.h>
-@@ -740,6 +741,7 @@ int __devcgroup_inode_permission(struct inode *inode, int mask)
+@@ -856,6 +857,7 @@ int __devcgroup_inode_permission(struct inode *inode, int mask)
  	return __devcgroup_check_permission(type, imajor(inode), iminor(inode),
  			access);
  }

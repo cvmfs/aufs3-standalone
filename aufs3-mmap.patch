@@ -202,10 +202,10 @@ index 54a8d26..dcf08b6 100644
  				atomic_dec(&inode->i_writecount);
  			mutex_lock(&mapping->i_mmap_mutex);
 diff --git a/mm/filemap.c b/mm/filemap.c
-index 000a220..b31c2cd 100644
+index 088358c..138a88c 100644
 --- a/mm/filemap.c
 +++ b/mm/filemap.c
-@@ -2089,7 +2089,7 @@ int filemap_page_mkwrite(struct vm_area_struct *vma, struct vm_fault *vmf)
+@@ -2091,7 +2091,7 @@ int filemap_page_mkwrite(struct vm_area_struct *vma, struct vm_fault *vmf)
  	int ret = VM_FAULT_LOCKED;
  
  	sb_start_pagefault(inode->i_sb);
@@ -229,7 +229,7 @@ index 34feba6..d857364 100644
  			if (IS_ERR_VALUE(addr)) {
  				err = addr;
 diff --git a/mm/madvise.c b/mm/madvise.c
-index 539eeb9..5e700b1 100644
+index a402f8f..134e15d 100644
 --- a/mm/madvise.c
 +++ b/mm/madvise.c
 @@ -327,12 +327,12 @@ static long madvise_remove(struct vm_area_struct *vma,

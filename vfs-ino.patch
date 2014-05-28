@@ -22,7 +22,7 @@
     around. When there is a file whose inum=100 on tmpfs, a new file may get
     inum=100, ie. the duplicated inums. I am not sure what will happen when
     the duplicated inums exist on tmpfs. If it happens, then some tools
-    won't work correctly such as backup and exporting via NFS, I am afraid.
+    won't work correctly such as backup, I am afraid.
     Anyway this is not a issue in get_next_ino(). It should be
     fixed in mm/shmem.c separatly if it is really necessary.
     

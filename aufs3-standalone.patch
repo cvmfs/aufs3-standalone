@@ -125,7 +125,7 @@ index 9d64679..7d6e08f 100644
  long vfs_truncate(struct path *path, loff_t length)
  {
 diff --git a/fs/splice.c b/fs/splice.c
-index 897bde2..ecf04e0 100644
+index 4797013..44b603a 100644
 --- a/fs/splice.c
 +++ b/fs/splice.c
 @@ -1116,6 +1116,7 @@ long do_splice_from(struct pipe_inode_info *pipe, struct file *out,

@@ -1,4 +1,4 @@
-aufs3.x-rcN standalone patch
+aufs3.15 standalone patch
 
 diff --git a/fs/inode.c b/fs/inode.c
 index 2d72083..30b69da 100644

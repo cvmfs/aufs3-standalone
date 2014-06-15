@@ -1,7 +1,7 @@
 aufs3.x-rcN standalone patch
 
 diff --git a/fs/inode.c b/fs/inode.c
-index 2d72083..30b69da 100644
+index b225c0f..73259c8 100644
 --- a/fs/inode.c
 +++ b/fs/inode.c
 @@ -57,6 +57,7 @@ static struct hlist_head *inode_hashtable __read_mostly;
@@ -77,7 +77,7 @@ index ad19959..adf290d 100644
  int fsnotify_fasync(int fd, struct file *file, int on)
  {
 diff --git a/fs/notify/mark.c b/fs/notify/mark.c
-index 923fe4a..176b435 100644
+index d90deaa..60b4239 100644
 --- a/fs/notify/mark.c
 +++ b/fs/notify/mark.c
 @@ -109,6 +109,7 @@ void fsnotify_put_mark(struct fsnotify_mark *mark)
@@ -161,7 +161,7 @@ index b9d613e..ba3b618 100644
  }
 +EXPORT_SYMBOL(cap_mmap_file);
 diff --git a/security/device_cgroup.c b/security/device_cgroup.c
-index 9134dbf..4d4217a 100644
+index d9d69e6..3f6f471 100644
 --- a/security/device_cgroup.c
 +++ b/security/device_cgroup.c
 @@ -7,6 +7,7 @@
@@ -172,7 +172,7 @@ index 9134dbf..4d4217a 100644
  #include <linux/list.h>
  #include <linux/uaccess.h>
  #include <linux/seq_file.h>
-@@ -856,6 +857,7 @@ int __devcgroup_inode_permission(struct inode *inode, int mask)
+@@ -849,6 +850,7 @@ int __devcgroup_inode_permission(struct inode *inode, int mask)
  	return __devcgroup_check_permission(type, imajor(inode), iminor(inode),
  			access);
  }
@@ -181,7 +181,7 @@ index 9134dbf..4d4217a 100644
  int devcgroup_inode_mknod(int mode, dev_t dev)
  {
 diff --git a/security/security.c b/security/security.c
-index 8b774f3..e3190b9 100644
+index 31614e9..b223a66 100644
 --- a/security/security.c
 +++ b/security/security.c
 @@ -407,6 +407,7 @@ int security_path_rmdir(struct path *dir, struct dentry *dentry)

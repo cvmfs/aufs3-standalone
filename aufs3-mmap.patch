@@ -203,10 +203,10 @@ index d2799d1..fc71463 100644
  				atomic_dec(&inode->i_writecount);
  			mutex_lock(&mapping->i_mmap_mutex);
 diff --git a/mm/filemap.c b/mm/filemap.c
-index 7fadf1c..cf66cd8 100644
+index dafb06f..f8c0ba3 100644
 --- a/mm/filemap.c
 +++ b/mm/filemap.c
-@@ -2091,7 +2091,7 @@ int filemap_page_mkwrite(struct vm_area_struct *vma, struct vm_fault *vmf)
+@@ -2037,7 +2037,7 @@ int filemap_page_mkwrite(struct vm_area_struct *vma, struct vm_fault *vmf)
  	int ret = VM_FAULT_LOCKED;
  
  	sb_start_pagefault(inode->i_sb);

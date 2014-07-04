@@ -199,7 +199,7 @@ index 96c5750..a087ecd 100644
  
  #ifndef CONFIG_MMU
 diff --git a/kernel/fork.c b/kernel/fork.c
-index d2799d1..fc71463 100644
+index 6a13c46..714302c 100644
 --- a/kernel/fork.c
 +++ b/kernel/fork.c
 @@ -416,7 +416,7 @@ static int dup_mmap(struct mm_struct *mm, struct mm_struct *oldmm)
@@ -371,7 +371,7 @@ index a5c6736..64afc2c 100644
  				goto out;
  			down_read(&mm->mmap_sem);
 diff --git a/mm/nommu.c b/mm/nommu.c
-index b78e3a8..d42688b 100644
+index 4a852f6..b369644 100644
 --- a/mm/nommu.c
 +++ b/mm/nommu.c
 @@ -658,7 +658,7 @@ static void __put_nommu_region(struct vm_region *region)

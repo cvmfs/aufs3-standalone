@@ -1,4 +1,4 @@
-aufs3.x-rcN mmap patch
+aufs3.16 mmap patch
 
 diff --git a/fs/buffer.c b/fs/buffer.c
 index eba6e4f..31f0b2d 100644
@@ -150,10 +150,10 @@ index 4064f3e..0003fdf 100644
  obj-y += init-mm.o
  
 diff --git a/mm/filemap.c b/mm/filemap.c
-index dafb06f..f8c0ba3 100644
+index 900edfa..f4dda0c 100644
 --- a/mm/filemap.c
 +++ b/mm/filemap.c
-@@ -2037,7 +2037,7 @@ int filemap_page_mkwrite(struct vm_area_struct *vma, struct vm_fault *vmf)
+@@ -2040,7 +2040,7 @@ int filemap_page_mkwrite(struct vm_area_struct *vma, struct vm_fault *vmf)
  	int ret = VM_FAULT_LOCKED;
  
  	sb_start_pagefault(inode->i_sb);
@@ -217,7 +217,7 @@ index a402f8f..134e15d 100644
  	return error;
  }
 diff --git a/mm/memory.c b/mm/memory.c
-index 7e8d820..b364e82 100644
+index 8b44f76..69a72bf 100644
 --- a/mm/memory.c
 +++ b/mm/memory.c
 @@ -2161,7 +2161,7 @@ reuse:

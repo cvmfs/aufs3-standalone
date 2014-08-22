@@ -124,7 +124,7 @@ index 6e0b286..8f374ed 100644
  
  #ifndef CONFIG_MMU
 diff --git a/kernel/fork.c b/kernel/fork.c
-index 1380d8a..d622d31 100644
+index 0cf9cdb..87ef21e 100644
 --- a/kernel/fork.c
 +++ b/kernel/fork.c
 @@ -424,7 +424,7 @@ static int dup_mmap(struct mm_struct *mm, struct mm_struct *oldmm)
@@ -150,7 +150,7 @@ index 632ae77..d3bdeb6 100644
  obj-y += init-mm.o
  
 diff --git a/mm/filemap.c b/mm/filemap.c
-index f501b56..0f306bc 100644
+index 90effcd..0021dc8 100644
 --- a/mm/filemap.c
 +++ b/mm/filemap.c
 @@ -2058,7 +2058,7 @@ int filemap_page_mkwrite(struct vm_area_struct *vma, struct vm_fault *vmf)

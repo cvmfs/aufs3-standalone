@@ -1,3 +1,5 @@
 CentOS7/RHEL7 is vanilla 3.10 plus patches from newer kernels
   * I_MUTEX_QUOTA --> I_MUTEX_NONDIR2 (3.13)
-  * 
+  * Fix syntax in aufs3-mmap patch (mm/fremap.c)
+  * d->d_count --> d_count(d) in several places
+  * VFS layer has a "delegated" inode pointer 

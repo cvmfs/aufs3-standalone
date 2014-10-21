@@ -1,0 +1,3 @@
+CentOS7/RHEL7 is vanilla 3.10 plus patches from newer kernels
+  * I_MUTEX_QUOTA --> I_MUTEX_NONDIR2 (3.13)
+  * 

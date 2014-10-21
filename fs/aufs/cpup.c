@@ -143,7 +143,8 @@ void au_dtime_revert(struct au_dtime *dt)
 	attr.ia_valid = ATTR_FORCE | ATTR_MTIME | ATTR_MTIME_SET
 		| ATTR_ATIME | ATTR_ATIME_SET;
 
-	err = vfsub_notify_change(&dt->dt_h_path, &attr);
+	/* no delegation since this is a directory */
+	err = vfsub_notify_change(&dt->dt_h_path, &attr, /*delegated*/NULL);
 	if (unlikely(err))
 		pr_warn("restoring timestamps failed(%d). ignored\n", err);
 }
@@ -200,13 +201,14 @@ int cpup_iattr(struct dentry *dst, aufs_bindex_t bindex, struct dentry *h_src,
 		sbits = !!(h_isrc->i_mode & (S_ISUID | S_ISGID));
 		au_cpup_attr_flags(h_idst, h_isrc->i_flags);
 	}
-	err = vfsub_notify_change(&h_path, &ia);
+	/* no delegation since it is just created */
+	err = vfsub_notify_change(&h_path, &ia, /*delegated*/NULL);
 
 	/* is this nfs only? */
 	if (!err && sbits && au_test_nfs(h_path.dentry->d_sb)) {
 		ia.ia_valid = ATTR_FORCE | ATTR_MODE;
 		ia.ia_mode = h_isrc->i_mode;
-		err = vfsub_notify_change(&h_path, &ia);
+		err = vfsub_notify_change(&h_path, &ia, /*delegated*/NULL);
 	}
 
 	return err;
@@ -303,7 +305,9 @@ static int au_do_copy_file(struct file *dst, struct file *src, loff_t len,
 			ia->ia_file = dst;
 			h_mtx = &file_inode(dst)->i_mutex;
 			mutex_lock_nested(h_mtx, AuLsc_I_CHILD2);
-			err = vfsub_notify_change(&dst->f_path, ia);
+			/* no delegation since it is just created */
+			err = vfsub_notify_change(&dst->f_path, ia,
+						  /*delegated*/NULL);
 			mutex_unlock(h_mtx);
 		}
 	}
@@ -620,7 +624,8 @@ static int au_do_ren_after_cpup(struct au_cp_generic *cpg, struct path *h_path)
 	h_dir = h_parent->d_inode;
 	IMustLock(h_dir);
 	AuDbg("%.*s %.*s\n", AuDLNPair(h_dentry), AuDLNPair(h_path->dentry));
-	err = vfsub_rename(h_dir, h_dentry, h_dir, h_path);
+	/* no delegation since it is just created */
+	err = vfsub_rename(h_dir, h_dentry, h_dir, h_path, /*delegated*/NULL);
 	dput(h_path->dentry);
 
 out:
@@ -640,7 +645,7 @@ static int au_cpup_single(struct au_cp_generic *cpg, struct dentry *dst_parent)
 	aufs_bindex_t old_ibstart;
 	unsigned char isdir, plink;
 	struct dentry *h_src, *h_dst, *h_parent;
-	struct inode *dst_inode, *h_dir, *inode;
+	struct inode *dst_inode, *h_dir, *inode, *delegated;
 	struct super_block *sb;
 	struct au_branch *br;
 	/* to reuduce stack size */
@@ -705,11 +710,17 @@ static int au_cpup_single(struct au_cp_generic *cpg, struct dentry *dst_parent)
 			}
 
 			a->h_path.dentry = h_dst;
-			err = vfsub_link(h_src, h_dir, &a->h_path);
+			delegated = NULL;
+			err = vfsub_link(h_src, h_dir, &a->h_path, &delegated);
 			if (!err && au_ftest_cpup(cpg->flags, RENAME))
 				err = au_do_ren_after_cpup(cpg, &a->h_path);
 			if (do_dt)
 				au_dtime_revert(&a->dt);
+			if (unlikely(err == -EWOULDBLOCK)) {
+                                pr_warn("cannot retry for NFSv4 delegation"
+                                        " for an internal link\n");
+                                iput(delegated);
+                        }
 			dput(h_src);
 			goto out_parent;
 		} else
@@ -778,7 +789,9 @@ out_rev:
 	rerr = 0;
 	if (h_dst->d_inode) {
 		if (!isdir)
-			rerr = vfsub_unlink(h_dir, &a->h_path, /*force*/0);
+			/* no delegation since it is just created */
+			rerr = vfsub_unlink(h_dir, &a->h_path, 
+					    /*delegated*/NULL, /*force*/0);
 		else
 			rerr = vfsub_rmdir(h_dir, &a->h_path);
 	}
@@ -1062,7 +1075,9 @@ static int au_cpup_wh(struct au_cp_generic *cpg, struct file *file)
 	dget(wh_dentry);
 	h_path.dentry = wh_dentry;
 	if (!S_ISDIR(wh_dentry->d_inode->i_mode))
-		err = vfsub_unlink(h_parent->d_inode, &h_path, /*force*/0);
+		/* no delegation since it is just created */
+		err = vfsub_unlink(h_parent->d_inode, &h_path,
+				   /*delegated*/NULL, /*force*/0);
 	else
 		err = vfsub_rmdir(h_parent->d_inode, &h_path);
 	if (unlikely(err)) {

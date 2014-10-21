@@ -253,7 +253,8 @@ static int au_test_nlink(struct inode *inode)
 	return -EMLINK;
 }
 
-int vfsub_link(struct dentry *src_dentry, struct inode *dir, struct path *path)
+int vfsub_link(struct dentry *src_dentry, struct inode *dir, struct path *path,
+               struct inode **delegated_inode)
 {
 	int err;
 	struct dentry *d;
@@ -273,7 +274,7 @@ int vfsub_link(struct dentry *src_dentry, struct inode *dir, struct path *path)
 		goto out;
 
 	lockdep_off();
-	err = vfs_link(src_dentry, dir, path->dentry);
+	err = vfs_link(src_dentry, dir, path->dentry, delegated_inode);
 	lockdep_on();
 	if (!err) {
 		struct path tmp = *path;
@@ -295,7 +296,8 @@ out:
 }
 
 int vfsub_rename(struct inode *src_dir, struct dentry *src_dentry,
-		 struct inode *dir, struct path *path)
+		 struct inode *dir, struct path *path,
+                 struct inode **delegated_inode)
 {
 	int err;
 	struct path tmp = {
@@ -315,7 +317,8 @@ int vfsub_rename(struct inode *src_dir, struct dentry *src_dentry,
 		goto out;
 
 	lockdep_off();
-	err = vfs_rename(src_dir, src_dentry, dir, path->dentry);
+	err = vfs_rename(src_dir, src_dentry, dir, path->dentry,
+                         delegated_inode);
 	lockdep_on();
 	if (!err) {
 		int did;
@@ -655,6 +658,7 @@ struct notify_change_args {
 	int *errp;
 	struct path *path;
 	struct iattr *ia;
+        struct inode **delegated_inode;
 };
 
 static void call_notify_change(void *args)
@@ -668,7 +672,8 @@ static void call_notify_change(void *args)
 	*a->errp = -EPERM;
 	if (!IS_IMMUTABLE(h_inode) && !IS_APPEND(h_inode)) {
 		lockdep_off();
-		*a->errp = notify_change(a->path->dentry, a->ia);
+		*a->errp = notify_change(a->path->dentry, a->ia,
+                                         a->delegated_inode);
 		lockdep_on();
 		if (!*a->errp)
 			vfsub_update_h_iattr(a->path, /*did*/NULL); /*ignore*/
@@ -676,13 +681,15 @@ static void call_notify_change(void *args)
 	AuTraceErr(*a->errp);
 }
 
-int vfsub_notify_change(struct path *path, struct iattr *ia)
+int vfsub_notify_change(struct path *path, struct iattr *ia,
+                        struct inode **delegated_inode)
 {
 	int err;
 	struct notify_change_args args = {
-		.errp	= &err,
-		.path	= path,
-		.ia	= ia
+		.errp	                = &err,
+		.path	                = path,
+		.ia	                = ia,
+                .delegated_inode        = delegated_inode
 	};
 
 	call_notify_change(&args);
@@ -690,13 +697,15 @@ int vfsub_notify_change(struct path *path, struct iattr *ia)
 	return err;
 }
 
-int vfsub_sio_notify_change(struct path *path, struct iattr *ia)
+int vfsub_sio_notify_change(struct path *path, struct iattr *ia,
+                            struct inode **delegated_inode)
 {
 	int err, wkq_err;
 	struct notify_change_args args = {
-		.errp	= &err,
-		.path	= path,
-		.ia	= ia
+		.errp	                = &err,
+		.path	                = path,
+		.ia	                = ia,
+                .delegated_inode        = delegated_inode
 	};
 
 	wkq_err = au_wkq_wait(call_notify_change, &args);
@@ -712,6 +721,7 @@ struct unlink_args {
 	int *errp;
 	struct inode *dir;
 	struct path *path;
+        struct inode **delegated_inode;
 };
 
 static void call_unlink(void *args)
@@ -720,7 +730,7 @@ static void call_unlink(void *args)
 	struct dentry *d = a->path->dentry;
 	struct inode *h_inode;
 	const int stop_sillyrename = (au_test_nfs(d->d_sb)
-				      && d->d_count == 1);
+				      && d_count(d) == 1);
 
 	IMustLock(a->dir);
 
@@ -737,7 +747,7 @@ static void call_unlink(void *args)
 		ihold(h_inode);
 
 	lockdep_off();
-	*a->errp = vfs_unlink(a->dir, d);
+	*a->errp = vfs_unlink(a->dir, d, a->delegated_inode);
 	lockdep_on();
 	if (!*a->errp) {
 		struct path tmp = {
@@ -759,13 +769,15 @@ static void call_unlink(void *args)
  * @dir: must be locked.
  * @dentry: target dentry.
  */
-int vfsub_unlink(struct inode *dir, struct path *path, int force)
+int vfsub_unlink(struct inode *dir, struct path *path, 
+                 struct inode **delegated_inode, int force)
 {
 	int err;
 	struct unlink_args args = {
-		.errp	= &err,
-		.dir	= dir,
-		.path	= path
+		.errp	               = &err,
+		.dir	               = dir,
+		.path	               = path,
+                .delegated_inode       = delegated_inode
 	};
 
 	if (!force)

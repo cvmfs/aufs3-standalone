@@ -97,7 +97,7 @@ static int au_dpages_append(struct au_dcsub_pages *dpages,
 		dpages->ndpage++;
 	}
 
-	AuDebugOn(!dentry->d_count);
+	AuDebugOn(!d_count(dentry));
 	dpage->dentries[dpage->ndentry++] = dget_dlock(dentry);
 	return 0; /* success */
 
